@@ -1,0 +1,31 @@
+name: MegaLinter
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - main
+
+permissions: read-all
+
+jobs:
+  build:
+    name: MegaLinter
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      statuses: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: MegaLinter
+        uses: megalinter/megalinter@v7
+        env:
+          DISABLE_LINTERS: SPELL_CSPELL
+          FORMATTERS_DISABLE_ERRORS: false
+          GITHUB_COMMENT_REPORTER: false
+          GITHUB_STATUS_REPORTER: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRINT_ALPACA: false
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
